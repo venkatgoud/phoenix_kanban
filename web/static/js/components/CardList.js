@@ -9,6 +9,8 @@ function displayCards(cards) {
 			description={card.description}
 			status={card.status}
 			tasks={card.tasks}
+			key={card.id}
+			id={card.id}
 		/>
 	 	
 	});	
@@ -17,8 +19,8 @@ function displayCards(cards) {
 export default class CardList extends Component {
 	render() {
 		return (
-			<div>
-				<h2>{this.props.category} </h2>
+			<div className='list'>
+				<h1>{this.props.category} </h1>
 				{displayCards(this.props.list)}	 	 
 			</div>
 		);

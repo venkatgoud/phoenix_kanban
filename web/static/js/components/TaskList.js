@@ -5,7 +5,11 @@ import { Form, FormGroup, FormControl, Button, Col, Checkbox, ControlLabel}
 function displayTasks(tasks){
 
 	return tasks.map(function(task){
-		return <Checkbox defaultChecked={task.done}>
+		return <Checkbox 
+					className="checklist__task"
+					key={task.id} 
+					defaultChecked={task.done}
+					>
 					{task.name}
 					<a href="#" className="checklist__task--remove" />	 
 		</Checkbox>
@@ -16,7 +20,7 @@ function displayTasks(tasks){
 export default class TaskList extends Component {
 	render() {
 		return (
-			<div>
+			<div className="checklist">
 				<FormGroup> 
 					{displayTasks(this.props.list)} 
 					<FormControl

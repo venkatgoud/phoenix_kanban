@@ -41,7 +41,7 @@ export default class Board extends Component {
 
 	render() {
 		return (
-			<div className='row'>
+			<div className='row board'>
 				<Col md={4}>
 				<CardList id = 'todo'
 					category = 'To Do' 
