@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import axios 	from 'axios';
 import update from 'react-addons-update';
+  
 import Board 	from '../components/Board';
-
-
 
 const API_URL = 'http://kanbanapi.pro-react.com';
 
 const API_HEADERS = {
 	'Content-Type': 'application/json',
-	Authorization: 'VICTOR_B'// The Authorization is not needed for local server 
+	Authorization: 'VICTOR_A'// The Authorization is not needed for local server 
 };
 
-export default class BoardContainer extends Component {
+class BoardContainer extends Component {
 
 	constructor(props){
 		super(props);
@@ -87,6 +86,39 @@ export default class BoardContainer extends Component {
 		});
 	}
 
+	updateCardStatus = (cardId, listId) => {
+		let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);
+
+		let card = this.state.cards[cardIndex];
+
+		if (card.status != listId){
+			this.setState(update(this.state,{
+				cards: {
+					[cardIndex] : {
+						status : {$set: listId}
+					}
+				}
+			}));
+		}
+	}
+
+	updateCardPosition = (cardId, afterId) =>{
+		let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);	
+		let card = this.state.cards[cardIndex];
+
+		let afterIndex = this.state.cards.findIndex((card)=> card.id === afterId);
+
+		this.setState(update(this.state, {
+			cards: {
+				$splice: [
+						[cardIndex, 1],
+						[afterIndex, 0, card]
+				]
+			}
+		}))
+
+	}
+
 	componentDidMount(){
 		axios.get(API_URL+'/cards',{headers: API_HEADERS})
   	.then((response) => {   		 
@@ -106,9 +138,15 @@ export default class BoardContainer extends Component {
 					delete: this.deleteTask,
 					   add: this.addTask
 				}}
+				cardCallbacks = {{
+					updateStatus: this.updateCardStatus,
+          updatePosition: this.updateCardPosition
+				}}
 			/>
 		);
 	}
 }
+
+export default BoardContainer;
 
 

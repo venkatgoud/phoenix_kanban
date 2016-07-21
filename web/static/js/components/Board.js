@@ -1,6 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import CardList from './CardList'
 import { Col } from 'react-bootstrap';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 let cardsList = [ 
 	{
@@ -35,7 +37,7 @@ let cardsList = [
 	},
 ];
 
-export default class Board extends Component {
+class Board extends Component {
 
 	filterCards = (cards, status) => {
 		return cards.filter((card) => card.status === status)
@@ -47,23 +49,35 @@ export default class Board extends Component {
 				<Col md={4}>
 				<CardList id = 'todo'
 					category = 'To Do'
-					taskCallbacks={this.props.taskCallbacks} 
+					taskCallbacks={this.props.taskCallbacks}
+					cardCallbacks={this.props.cardCallbacks} 
 					list={this.filterCards(this.props.cards, 'todo')}/>
 				</Col>
 				<Col md={4}>
 				<CardList id = 'in-progress' 
 					category = 'In Progress'
 					taskCallbacks={this.props.taskCallbacks} 
+					cardCallbacks={this.props.cardCallbacks}
 					list={this.filterCards(this.props.cards, 'in-progress')}/>
 				</Col>
 				<Col md={4}>
 				<CardList id = 'done' 
 					category = 'Done'
-					taskCallbacks={this.props.taskCallbacks} 
+					taskCallbacks={this.props.taskCallbacks}
+					cardCallbacks={this.props.cardCallbacks} 
 					list={this.filterCards(this.props.cards, 'done')}/>
 				</Col>
 			</div>
 		);
 	}
 }
+
+Board.propTypes = {
+	cards: PropTypes.arrayOf(PropTypes.object), 
+	taskCallbacks: PropTypes.object, 
+	cardCallbacks: PropTypes.object
+};
+
+export default DragDropContext(HTML5Backend)(Board);
+ 
 
