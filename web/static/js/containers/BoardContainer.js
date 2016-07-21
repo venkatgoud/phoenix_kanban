@@ -4,6 +4,8 @@ import update from 'react-addons-update';
   
 import Board 	from '../components/Board';
 
+import { throttle } from '../utils';
+
 const API_URL = 'http://kanbanapi.pro-react.com';
 
 const API_HEADERS = {
@@ -19,6 +21,11 @@ class BoardContainer extends Component {
 		this.state = {
 			cards : []
 		}
+
+		// Only call updateCardStatus when arguments change
+  	this.updateCardStatus = throttle(this.updateCardStatus.bind(this));
+  	// Call updateCardPosition at max every 500ms (or when arguments change)
+  	this.updateCardPosition = throttle(this.updateCardPosition.bind(this),500);
 	}
 
 	addTask = (cardId, taskName) => {
@@ -86,6 +93,27 @@ class BoardContainer extends Component {
 		});
 	}
 
+	persistCardDrag = (cardId, status) => {
+		let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);
+		let card = this.state.cards[cardIndex];	
+
+		axios.put(`${API_URL}/cards/${cardId}`,
+			JSON.stringify({status: card.status, row_order_position: cardIndex}),
+			{headers: API_HEADERS})
+		.catch((error) => {
+			let prevState = this.state;
+			console.log(error);
+
+			this.setState(update(this.state,{
+				cards: {
+					[cardIndex] : {
+						status : {$set: listId}
+					}
+				}
+			}));
+			})					
+	}
+
 	updateCardStatus = (cardId, listId) => {
 		let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);
 
@@ -140,7 +168,8 @@ class BoardContainer extends Component {
 				}}
 				cardCallbacks = {{
 					updateStatus: this.updateCardStatus,
-          updatePosition: this.updateCardPosition
+          updatePosition: this.updateCardPosition,
+          persistCardDrag: this.persistCardDrag
 				}}
 			/>
 		);
