@@ -6,8 +6,9 @@ let cardsList = [
 	{
 	    id: 1,
 	    title: "Read the Book",
-	    description: "I should read the whole book",
+	    description: "I should read the **whole** book",
 	    status: "in-progress",
+	    color: '#BD8D31',
 	    tasks: []
 	}, 
 	{
@@ -15,6 +16,7 @@ let cardsList = [
 	    title: "Write some code",
 	    description: "Code along with the samples in the book",
 	    status: "todo",
+	    color: '#3A7E28',
 	    tasks: [
 			{
 				id: 1,
@@ -44,20 +46,24 @@ export default class Board extends Component {
 			<div className='row board'>
 				<Col md={4}>
 				<CardList id = 'todo'
-					category = 'To Do' 
-					list={this.filterCards(cardsList, 'todo')}/>
+					category = 'To Do'
+					taskCallbacks={this.props.taskCallbacks} 
+					list={this.filterCards(this.props.cards, 'todo')}/>
 				</Col>
 				<Col md={4}>
 				<CardList id = 'in-progress' 
-					category = 'In Progress' 
-					list={this.filterCards(cardsList, 'in-progress')}/>
+					category = 'In Progress'
+					taskCallbacks={this.props.taskCallbacks} 
+					list={this.filterCards(this.props.cards, 'in-progress')}/>
 				</Col>
 				<Col md={4}>
 				<CardList id = 'done' 
-					category = 'Done' 
-					list={this.filterCards(cardsList, 'done')}/>
+					category = 'Done'
+					taskCallbacks={this.props.taskCallbacks} 
+					list={this.filterCards(this.props.cards, 'done')}/>
 				</Col>
 			</div>
 		);
 	}
 }
+
