@@ -59,7 +59,11 @@ class Card extends Component {
 				>
 					{this.props.title}
 				</div>
+				<ReactCSSTransitionGroup transitionName="toggle"
+                             transitionEnterTimeout={250}
+                         transitionLeaveTimeout={250} >
 				{cardDetails} 
+				</ReactCSSTransitionGroup>
 			</div>
 	}
 }
