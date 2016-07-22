@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import CardList from './CardList'
+import { Link } from 'react-router';
 import { Col } from 'react-bootstrap';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import CardList from './CardList'
 
 let cardsList = [ 
 	{
@@ -44,8 +45,13 @@ class Board extends Component {
 	}
 
 	render() {
+		let cardModal=this.props.children && React.cloneElement(this.props.children, {
+			cards: this.props.cards,
+			cardCallbacks: this.props.cardCallbacks });
+
 		return (
 			<div className='row board'>
+				<Link to='/new' className="float-button">+</Link>
 				<Col md={4}>
 				<CardList id = 'todo'
 					category = 'To Do'
@@ -67,6 +73,7 @@ class Board extends Component {
 					cardCallbacks={this.props.cardCallbacks} 
 					list={this.filterCards(this.props.cards, 'done')}/>
 				</Col>
+				{cardModal}
 			</div>
 		);
 	}

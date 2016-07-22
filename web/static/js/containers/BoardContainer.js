@@ -114,6 +114,47 @@ class BoardContainer extends Component {
 			})					
 	}
 
+	addCard = (card) => {
+		let prevState = this.state;
+
+		if (card.id === null) {
+			card = Object.assign({}, card, {id: Date.now()})
+		}
+
+		let nextState = update(this.state.cards, {$push: [card]});
+
+		this.setState({cards: nextState});
+
+		axios.post(`${API_URL}/cards`,
+			JSON.stringify(card),
+			{headers: API_HEADERS})
+		.then((response) => {   		 
+			card.id = response.data.id;
+  		this.setState({cards: nextState});  		
+  	})
+  	.catch((error) => {
+  		console.log(error);
+  		this.setState(prevState);
+  	}); 
+	}
+
+	updateCard = (card) => {
+		let prevState = this.state;
+		let cardIndex = this.state.cards.findIndex((c)=>c.id == card.id);
+
+		let nextState = update(this.state.cards, {[cardIndex]: {$set: card}});
+
+		this.setState({cards: nextState});
+
+		axios.put(`${API_URL}/cards/${card.id}`,
+			JSON.stringify(card),
+			{headers: API_HEADERS})		 
+  	.catch((error) => {
+  		console.log(error);
+  		this.setState(prevState);
+  	}); 
+	}
+
 	updateCardStatus = (cardId, listId) => {
 		let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);
 
@@ -158,21 +199,26 @@ class BoardContainer extends Component {
 	}
 
 	render() {
-		return (
-			<Board 
-				cards={this.state.cards} 
-				taskCallbacks = {{
+
+		//TODO - why do I need to clone?
+
+		let board = this.props.children && React.cloneElement(this.props.children,{
+			cards: this.state.cards,
+			taskCallbacks: {
 					toggle: this.toggleTask,
 					delete: this.deleteTask,
 					   add: this.addTask
-				}}
-				cardCallbacks = {{
+			},
+			cardCallbacks: {
+					addCard: this.addCard,
+					updateCard: this.updateCard,
 					updateStatus: this.updateCardStatus,
           updatePosition: this.updateCardPosition,
           persistCardDrag: this.persistCardDrag
-				}}
-			/>
-		);
+			}
+		})
+
+		return board;
 	}
 }
 
