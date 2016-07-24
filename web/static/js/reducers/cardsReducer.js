@@ -52,8 +52,12 @@ export default function reducer(state = initialState, action = {}){
 		}
 		case Constants.PERSIST_CARD_DRAG_REQUEST:
 			return {...state, requesting: true};
-		case Constants.PERSIST_CARD_DRAG_SUCCESS: 
-			return {...state, requesting: false};
+		case Constants.PERSIST_CARD_DRAG_SUCCESS:{
+			let cardIndex = action.data.cardIndex;
+			let card = action.data.card;
+			let nextState = update(state.list,{[cardIndex] : {status : {$set: card.status}}});
+			return {list: nextState, requesting: false};
+		};
 		case Constants.PERSIST_CARD_DRAG_ERROR: 
 			return {...state, requesting: false, error: action.error};
 
@@ -96,11 +100,7 @@ export default function reducer(state = initialState, action = {}){
 			return {list: nextState, requesting: false, error: action.error};
 		}
 
-		case Constants.DELETE_TASK_REQUEST: {			
-			return {...state, requesting: true};
-
-		}
-		case Constants.DELETE_TASK_SUCCESS: {
+		case Constants.DELETE_TASK_REQUEST: {	
 			let cardId = action.data.cardId;
 			let taskId = action.data.taskId;
 			let cardIndex = state.list.findIndex((card) => card.id == cardId);
@@ -110,11 +110,15 @@ export default function reducer(state = initialState, action = {}){
 												[cardIndex] : {
 													tasks: {$splice:[[taskIndex, 1]]}
 												} 
-										});
+										});		
 			return {list: nextState, requesting: false};
+
+		}
+		case Constants.DELETE_TASK_REQUEST: {		 
+			return {...state, requesting: true};
 		}
 
-		case Constants.DELETE_TASK_FAILURE: {
+		case Constants.DELETE_TASK_FAILURE: {			  
 			return {...state, requesting: false, error: action.error};
 		}
 
@@ -149,32 +153,19 @@ export default function reducer(state = initialState, action = {}){
 			let card = state.list[cardIndex];
 			let afterIndex = state.list.findIndex((card)=> card.id === afterId);
 
-			let nextState = update(state, {
-				list: {
-					$splice: [
-						[cardIndex, 1],
-						[afterIndex, 0, card]
-					]
-				}
-			});
+			let nextState = update(state.list, {$splice: [[cardIndex, 1],[afterIndex, 0, card]]});
 
 			return {list: nextState};
 		}
 
 		case Constants.UPDATE_CARD_STATUS: {			 
-			let {cardId, listId} = action.data;			
+			let {cardId, status} = action.data;			
 			let cardIndex = state.list.findIndex((card) => card.id === cardId);
 			let card = state.list[cardIndex];
-			let nextState = state;
+			let nextState = state.list;
 
-			if (card.status != listId){
-				nextState = update(state,{
-					list: {
-						[cardIndex] : {
-							status : {$set: listId}
-						}
-					}
-				});
+			if (card.status != status){
+				nextState = update(state.list,{[cardIndex] : {status : {$set: status}}});
 			}
 			return {list: nextState};
 		}

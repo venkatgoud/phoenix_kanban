@@ -10,12 +10,11 @@ import { throttle } from '../utils';
 class BoardContainer extends Component {
 
 	constructor(props){
-		super(props);
-		//TODO
+		super(props);		 
 		// Only call updateCardStatus when arguments change
-  	// this.updateCardStatus = throttle(this.updateCardStatus.bind(this));
+  	this.updateCardStatus = throttle(this.updateCardStatus.bind(this));
   	// Call updateCardPosition at max every 500ms (or when arguments change)
-  	// this.updateCardPosition = throttle(this.updateCardPosition.bind(this),500);
+  	this.updateCardPosition = throttle(this.updateCardPosition.bind(this),500);
 	}
 
 	componentDidMount(){
@@ -54,6 +53,23 @@ class BoardContainer extends Component {
 		let card = this.props.cards[cardIndex];
 
 		dispatch(CardActions.updateCard(card, draftCard));	
+	}
+
+	updateCardStatus = (cardId, status) => {		
+		const { dispatch } = this.props;
+		dispatch(CardActions.updateCardStatus(cardId, status));	
+	}
+
+	updateCardPosition = (cardId, afterId) => {
+		const { dispatch } = this.props;
+		dispatch(CardActions.updateCardPosition(cardId, afterId));	
+	}
+
+	persistCardDrag = (cardId, status) => {
+		let cardIndex = this.props.cards.findIndex((card) => card.id === cardId);
+		let card = this.props.cards[cardIndex];	
+		const { dispatch } = this.props;
+		dispatch(CardActions.persistCardDrag(card, cardIndex));	
 	}
 
 	render() {

@@ -60,9 +60,10 @@ const Actions = {
 		}
 	},
 
-	updateCardStatus: (cardId, listId) => {
+	updateCardStatus: (cardId, status) => {		 
 		return (dispatch) => {
-			dispatch({type: Constants.UPDATE_CARD_STATUS, data: {cardId: cardId, listId: listId}});
+			dispatch({type: Constants.UPDATE_CARD_STATUS, 
+				data: {cardId: cardId, status: status}});
 		}
 	},
 
@@ -72,15 +73,16 @@ const Actions = {
 		}
 	},
 
-	persistCardDrag: (cardProps) => {		 
+	persistCardDrag: (card, cardIndex) => {		 
 		return (dispatch) => {
 			dispatch({type: Constants.PERSIST_CARD_DRAG_REQUEST})
 
-			axios.put(`${API_URL}/cards/${cardId}`,
+			axios.put(`${API_URL}/cards/${card.id}`,
 				JSON.stringify({status: card.status, row_order_position: cardIndex}),
 				{headers: API_HEADERS})
 			.then((response) => {
-				dispatch({type: Constants.PERSIST_CARD_DRAG_SUCCESS})
+				dispatch({type: Constants.PERSIST_CARD_DRAG_SUCCESS, 
+					data:{card: card, cardIndex : cardIndex}});
 			})
 			.catch((error) => {
 				dispatch({type: Constants.PERSIST_CARD_DRAG_ERROR, error: error})
