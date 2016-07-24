@@ -88,6 +88,12 @@ const Actions = {
 				dispatch({type: Constants.PERSIST_CARD_DRAG_ERROR, error: error})
 			})	
 		}	
+	},
+
+	toggleDetails: (cardId) => {
+		return (dispatch) => {
+			dispatch({type: Constants.TOGGLE_CARD_DETAILS, data:{cardId: cardId}})
+		}
 	}
 
 } 

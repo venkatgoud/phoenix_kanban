@@ -169,6 +169,18 @@ export default function reducer(state = initialState, action = {}){
 			}
 			return {list: nextState};
 		}
+
+		case Constants.TOGGLE_CARD_DETAILS: {
+			let cardId = action.data.cardId;			
+			let cardIndex = state.list.findIndex((card) => card.id === cardId);
+
+			let nextState = update(state.list,{[cardIndex]: 
+					{showDetails: 
+						{$apply: (currentValue) => (currentValue) ? false : true}}});
+
+			return {list: nextState};
+		}
+
 		default:
 			return state;
 	}

@@ -32,6 +32,8 @@ const Constants = keyMirror({
 	TOGGLE_TASK_SUCCESS: null,
 	TOGGLE_TASK_ERROR: null,
 
+	TOGGLE_CARD_DETAILS: null,
+
 	CARD: 'card'
 });
 

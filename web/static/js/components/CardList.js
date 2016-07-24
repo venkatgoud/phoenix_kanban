@@ -22,6 +22,7 @@ class CardList extends Component {
 
 	displayCards = (cards) => {
 		return cards.map(function(card){
+
 			return <Card 
 				title={card.title}
 				description={card.description}
@@ -30,6 +31,7 @@ class CardList extends Component {
 				color={card.color}
 				key={card.id}
 				id={card.id}
+				showDetails={card.showDetails}
 				taskCallbacks={this.props.taskCallbacks}
 				cardCallbacks={this.props.cardCallbacks}
 			/>	 	

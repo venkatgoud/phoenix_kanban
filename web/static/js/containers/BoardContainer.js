@@ -22,6 +22,11 @@ class BoardContainer extends Component {
     dispatch(CardActions.fetchCards());
 	}
 
+	toggleDetails = (cardId) => {
+		const { dispatch } = this.props;
+    dispatch(CardActions.toggleDetails(cardId));		
+	}
+
 	addTask = (cardId, newTask) => {
 		const { dispatch } = this.props;
     dispatch(TaskActions.addTask(cardId, newTask));	
@@ -72,7 +77,7 @@ class BoardContainer extends Component {
 		dispatch(CardActions.persistCardDrag(card, cardIndex));	
 	}
 
-	render() {
+	render() {		 
 		//TODO - why do I need to clone?
 		let board = this.props.children && React.cloneElement(this.props.children,{
 			cards: this.props.cards,
@@ -86,7 +91,8 @@ class BoardContainer extends Component {
 					updateCard: this.updateCard,
 					updateStatus: this.updateCardStatus,
           updatePosition: this.updateCardPosition,
-          persistCardDrag: this.persistCardDrag
+          persistCardDrag: this.persistCardDrag,
+          toggleDetails: this.toggleDetails
 			}
 		})
 		return board;

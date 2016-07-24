@@ -55,20 +55,17 @@ class Card extends Component {
 
 	constructor(props){
 		super(props);
-
-		this.state = {
-			showDetails : false
-		}
 	}
 
 	toggleDetails = () => {
-		this.setState({showDetails: !this.state.showDetails})
+		this.props.cardCallbacks.toggleDetails(this.props.id);
+		// this.setState({showDetails: !this.state.showDetails})
 	}
 
 	render() {		 
 		const { connectDragSource, connectDropTarget } = this.props;
 		let cardDetails = null;
-		if (this.state.showDetails){
+		if (this.props.showDetails) {      
 			cardDetails = <div className='card_details'>
 				<span dangerouslySetInnerHTML={{__html:marked(this.props.description)}}/>				 				 				 
 				<TaskList 
@@ -93,7 +90,7 @@ class Card extends Component {
 								<div style={sideColor}/>	
 								<div className="card__edit"><Link to={'/edit/'+this.props.id}>&#9998;</Link></div>
 								<div 
-									className={this.state.showDetails ? 'card__title card__title--is-open' : 'card__title'}
+									className={this.props.showDetails ? 'card__title card__title--is-open' : 'card__title'}
 									onClick = {this.toggleDetails}
 								>
 									{this.props.title}
@@ -110,7 +107,7 @@ class Card extends Component {
 
 Card.propTypes = {
 	id: PropTypes.number,
-	// title: PropTypes.string.isRequired,
+	showDetails: PropTypes.bool,
 	title: titlePropType,
 	description: PropTypes.string,
 	color: PropTypes.string,

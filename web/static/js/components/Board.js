@@ -41,10 +41,14 @@ let cardsList = [
 class Board extends Component {
 
 	filterCards = (cards, status) => {
-		return cards.filter((card) => card.status === status)
+		return cards.filter((card) => 			
+			{					
+				return (card.status === status);
+			}
+		)
 	}
 
-	render() {
+	render() {		 
 		let cardModal=this.props.children && React.cloneElement(this.props.children, {
 			cards: this.props.cards,
 			cardCallbacks: this.props.cardCallbacks });
