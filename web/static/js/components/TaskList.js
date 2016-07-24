@@ -10,16 +10,16 @@ export default class TaskList extends Component {
 	return tasks.map(function(task, taskIndex){
 		return (
 			<Checkbox 
-								className="checklist__task"
-								key={task.id} 
-								defaultChecked={task.done}
-								onChange={this.props.taskCallbacks.toggle.bind(null,this.props.cardId,task.id, taskIndex)}
-							>
-							{task.name}
-							<a href="#" 
-								className="checklist__task--remove" 
-								onClick={this.props.taskCallbacks.delete.bind(null,this.props.cardId, task.id, taskIndex)}
-							/>	 
+					className="checklist__task"
+					key={task.id} 
+					defaultChecked={task.done}
+					onChange={this.props.taskCallbacks.toggle.bind(null,this.props.cardId,task.id, taskIndex)}
+					>
+					{task.name}
+					<a href="#" 
+						className="checklist__task--remove" 
+						onClick={this.props.taskCallbacks.delete.bind(null,this.props.cardId, task.id, taskIndex)}
+					/>	 
 			</Checkbox>)
 		}.bind(this))
 	}

@@ -9,13 +9,11 @@ class NewCard extends Component {
 
 	handleSubmit = (event) => {
 		event.preventDefault();
-		this.props.cardCallbacks.addCard(this.state);
-		// this.props.history.pushState(null,'/');
+		this.props.cardCallbacks.addCard(this.state); 
 		this.context.router.push('/')
 	}
 
-	handleClose  = (event) => {
-		// this.props.history.pushState(null,'/');
+	handleClose  = (event) => {		 
 		this.context.router.push('/')
 	}
 

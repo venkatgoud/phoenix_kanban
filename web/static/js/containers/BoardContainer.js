@@ -1,209 +1,65 @@
-import React, { Component } from 'react';
-import axios 	from 'axios';
-import update from 'react-addons-update';
+import React, { Component } from 'react'; 
+import { connect }      from 'react-redux'; 
   
 import Board 	from '../components/Board';
+import CardActions from '../actions/cardActions';
+import TaskActions from '../actions/taskActions';
 
 import { throttle } from '../utils';
-
-const API_URL = 'http://kanbanapi.pro-react.com';
-
-const API_HEADERS = {
-	'Content-Type': 'application/json',
-	Authorization: 'VICTOR_A'// The Authorization is not needed for local server 
-};
-
+ 
 class BoardContainer extends Component {
 
 	constructor(props){
 		super(props);
-
-		this.state = {
-			cards : []
-		}
-
+		//TODO
 		// Only call updateCardStatus when arguments change
-  	this.updateCardStatus = throttle(this.updateCardStatus.bind(this));
+  	// this.updateCardStatus = throttle(this.updateCardStatus.bind(this));
   	// Call updateCardPosition at max every 500ms (or when arguments change)
-  	this.updateCardPosition = throttle(this.updateCardPosition.bind(this),500);
-	}
-
-	addTask = (cardId, taskName) => {
-		let prevState = this.state;
-		let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
-		
-		let newTask = {id:Date.now(), name:taskName, done:false};
-
-		let nextState = update(this.state.cards, {[cardIndex]:{tasks: {$push : [newTask]}}});
-
-		this.setState({cards:nextState});
-
-		axios.post(`${API_URL}/cards/${cardId}/tasks`,JSON.stringify(newTask), {headers: API_HEADERS})
-		.then((response) => {
-			newTask.id = response.data.id;			
-			this.setState({cards: nextState});
-		})
-		.catch((error) => {
-			this.setState(prevState);
-			console.log(error);
-			throw new Error("Server response wasn't OK");
-		})	
-	}
-
-	deleteTask = (cardId, taskId, taskIndex) => {
-		let prevState = this.state;
-		let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
-
-		let nextState = update(this.state.cards, {
-												[cardIndex] : {
-													tasks: {$splice:[[taskIndex, 1]]}
-												} 
-										});
-		this.setState({cards: nextState})
-
-		axios.delete(`${API_URL}/cards/${cardId}/tasks/${taskId}`,{headers: API_HEADERS})
-		.catch((error) => {
-			let prevState = this.state;
-			console.log(error);
-			throw new Error("Server response wasn't OK");			
-		});
-	}
-
-	toggleTask = (cardId, taskId, taskIndex) => {
-		let prevState = this.state;
-		let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
-		
-		let newDoneValue;
-
-		let nextState = update(this.state.cards, 
-											{[cardIndex] :{tasks:{[taskIndex]:{done: 
-												{$apply : (done)=>{
-												newDoneValue = !done; return newDoneValue;}}}}}
-										});
-
-		this.setState({cards: nextState});
-
-		axios.put(`${API_URL}/cards/${cardId}/tasks/${taskId}`,
-			JSON.stringify({done:newDoneValue}),
-			{headers: API_HEADERS})
-		.catch((error) => {
-			let prevState = this.state;
-			console.log(error);
-			throw new Error("Server response wasn't OK");
-		});
-	}
-
-	persistCardDrag = (cardId, status) => {
-		let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);
-		let card = this.state.cards[cardIndex];	
-
-		axios.put(`${API_URL}/cards/${cardId}`,
-			JSON.stringify({status: card.status, row_order_position: cardIndex}),
-			{headers: API_HEADERS})
-		.catch((error) => {
-			let prevState = this.state;
-			console.log(error);
-
-			this.setState(update(this.state,{
-				cards: {
-					[cardIndex] : {
-						status : {$set: listId}
-					}
-				}
-			}));
-			})					
-	}
-
-	addCard = (card) => {
-		let prevState = this.state;
-
-		if (card.id === null) {
-			card = Object.assign({}, card, {id: Date.now()})
-		}
-
-		let nextState = update(this.state.cards, {$push: [card]});
-
-		this.setState({cards: nextState});
-
-		axios.post(`${API_URL}/cards`,
-			JSON.stringify(card),
-			{headers: API_HEADERS})
-		.then((response) => {   		 
-			card.id = response.data.id;
-  		this.setState({cards: nextState});  		
-  	})
-  	.catch((error) => {
-  		console.log(error);
-  		this.setState(prevState);
-  	}); 
-	}
-
-	updateCard = (card) => {
-		let prevState = this.state;
-		let cardIndex = this.state.cards.findIndex((c)=>c.id == card.id);
-
-		let nextState = update(this.state.cards, {[cardIndex]: {$set: card}});
-
-		this.setState({cards: nextState});
-
-		axios.put(`${API_URL}/cards/${card.id}`,
-			JSON.stringify(card),
-			{headers: API_HEADERS})		 
-  	.catch((error) => {
-  		console.log(error);
-  		this.setState(prevState);
-  	}); 
-	}
-
-	updateCardStatus = (cardId, listId) => {
-		let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);
-
-		let card = this.state.cards[cardIndex];
-
-		if (card.status != listId){
-			this.setState(update(this.state,{
-				cards: {
-					[cardIndex] : {
-						status : {$set: listId}
-					}
-				}
-			}));
-		}
-	}
-
-	updateCardPosition = (cardId, afterId) =>{
-		let cardIndex = this.state.cards.findIndex((card) => card.id === cardId);	
-		let card = this.state.cards[cardIndex];
-
-		let afterIndex = this.state.cards.findIndex((card)=> card.id === afterId);
-
-		this.setState(update(this.state, {
-			cards: {
-				$splice: [
-						[cardIndex, 1],
-						[afterIndex, 0, card]
-				]
-			}
-		}))
-
+  	// this.updateCardPosition = throttle(this.updateCardPosition.bind(this),500);
 	}
 
 	componentDidMount(){
-		axios.get(API_URL+'/cards',{headers: API_HEADERS})
-  	.then((response) => {   		 
-  		this.setState({cards: response.data})  		
-  	})  	 
-  	.catch((error) => {
-    	console.log(error);
-  	});
+		const { dispatch } = this.props;
+    dispatch(CardActions.fetchCards());
+	}
+
+	addTask = (cardId, newTask) => {
+		const { dispatch } = this.props;
+    dispatch(TaskActions.addTask(cardId, newTask));	
+	}
+
+	deleteTask = (cardId, taskId,taskIndex) => {
+		const { dispatch } = this.props;
+		
+    dispatch(TaskActions.deleteTask(cardId, taskId,taskIndex));	
+	}
+
+	toggleTask = (cardId, taskId,taskIndex) => {
+		const { dispatch } = this.props;
+		let cardIndex = this.props.cards.findIndex((card) => card.id == cardId);
+		let card = this.props.cards[cardIndex];		 
+		let task = card.tasks[taskIndex];
+
+    dispatch(TaskActions.toggleTask(cardId, taskId,taskIndex, !(task.done)));	
+	}
+
+	addCard = (card) => {
+		const { dispatch } = this.props;
+		dispatch(CardActions.addCard(card));	
+	}
+
+	updateCard = (draftCard) => {
+		const { dispatch } = this.props;
+		let cardIndex = this.props.cards.findIndex((c)=>c.id == draftCard.id);
+		let card = this.props.cards[cardIndex];
+
+		dispatch(CardActions.updateCard(card, draftCard));	
 	}
 
 	render() {
-
 		//TODO - why do I need to clone?
-
 		let board = this.props.children && React.cloneElement(this.props.children,{
-			cards: this.state.cards,
+			cards: this.props.cards,
 			taskCallbacks: {
 					toggle: this.toggleTask,
 					delete: this.deleteTask,
@@ -217,11 +73,14 @@ class BoardContainer extends Component {
           persistCardDrag: this.persistCardDrag
 			}
 		})
-
 		return board;
 	}
 }
+ 
+const mapStateToProps = (state) => ({
+  cards: state.cards.list
+});
 
-export default BoardContainer;
+export default connect(mapStateToProps)(BoardContainer);
 
 
